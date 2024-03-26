@@ -2,13 +2,13 @@ import plotly.graph_objects as go
 
 
 class CandlestickPattern:
-    def __init__(self, plot):
-        self.plot = plot
+    def __init__(self, data, fig):
+        self.data = data
 
     def avg_value(self):
         list_avg_symbols = []
         for k in range(400):
-            list_avg_symbols.append(float(self.plot.klines[-k][2]))
+            list_avg_symbols.append(float(self.data[-k][2]))
         avg_val = (max(list_avg_symbols) - min(list_avg_symbols)) / 400
         return avg_val
 
@@ -44,25 +44,25 @@ class CandlestickPattern:
         #####
         avg = self.avg_value()
         print(f'    1_avarage = {avg}')
-        while i < len(self.plot.klines):
+        while i < len(self.data):
 
-            body = abs(self.plot.klines[i][1] - self.plot.klines[i][4])
-            if float(self.plot.klines[i][1]) > float(self.plot.klines[i][4]):  # open > close  (k_red)
-                low_shadow = abs(self.plot.klines[i][3] - self.plot.klines[i][4])
-                high_shadow = abs(self.plot.klines[i][2] - self.plot.klines[i][1])
+            body = abs(self.data[i][1] - self.data[i][4])
+            if float(self.data[i][1]) > float(self.data[i][4]):  # open > close  (k_red)
+                low_shadow = abs(self.data[i][3] - self.data[i][4])
+                high_shadow = abs(self.data[i][2] - self.data[i][1])
                 BIAS += 0.2
             else:  # close > open (k_green)
-                low_shadow = abs(self.plot.klines[i][3] - self.plot.klines[i][1])
-                high_shadow = abs(self.plot.klines[i][2] - self.plot.klines[i][4])
+                low_shadow = abs(self.data[i][3] - self.data[i][1])
+                high_shadow = abs(self.data[i][2] - self.data[i][4])
             if (body / avg) >= BIAS_BODY:
                 weight = BIAS_FOOT * (low_shadow / body) - BIAS_HEAD * (high_shadow / body) + BIAS_VOLUME * (
-                            abs(self.plot.klines[i][2] - self.plot.klines[i][3]) / avg)
+                            abs(self.data[i][2] - self.data[i][3]) / avg)
                 if weight - BIAS >= 0:
                     self.plot.fig.add_trace(
-                        go.Scatter(x=[self.plot.klines[i][0]], y=[float(self.plot.klines[i][3]) - avg * 2], mode='markers', name='markers',
+                        go.Scatter(x=[self.data[i][0]], y=[float(self.data[i][3]) - avg * 2], mode='markers', name='markers',
                                    marker=go.Marker(size=10, symbol='triangle-up', color='blue'),
                                    row=self.row, col=self.col))
-                    print(i, self.plot.klines[i][0], weight)
+                    print(i, self.data[i][0], weight)
             i += 1
             BIAS = 1.7
             #     BIAS = 1.65
@@ -83,22 +83,22 @@ class CandlestickPattern:
         avg = self.avg_value()
         i = 0
         print('    2_avarage=', avg)
-        while i < len(self.plot.klines):
+        while i < len(self.data):
 
-            body = abs(self.plot.klines[i][1] - self.plot.klines[i][4])
-            if float(self.plot.klines[i][1]) > float(self.plot.klines[i][4]):  # open > close  (k_red)
-                low_shadow = abs(self.plot.klines[i][2] - self.plot.klines[i][1])
-                high_shadow = abs(self.plot.klines[i][4] - self.plot.klines[i][3])
+            body = abs(self.data[i][1] - self.data[i][4])
+            if float(self.data[i][1]) > float(self.data[i][4]):  # open > close  (k_red)
+                low_shadow = abs(self.data[i][2] - self.data[i][1])
+                high_shadow = abs(self.data[i][4] - self.data[i][3])
             else:  # close > open (k_green)
-                low_shadow = abs(self.plot.klines[i][2] - self.plot.klines[i][4])
-                high_shadow = abs(self.plot.klines[i][4] - self.plot.klines[i][3])
+                low_shadow = abs(self.data[i][2] - self.data[i][4])
+                high_shadow = abs(self.data[i][4] - self.data[i][3])
             if (body / avg) >= BIAS_BODY:
                 weight = BIAS_FOOT * (low_shadow / body) - BIAS_HEAD * (high_shadow / body) + BIAS_VOLUME * (
-                            abs(self.plot.klines[i][2] - self.plot.klines[i][3]) / avg)
+                            abs(self.data[i][2] - self.data[i][3]) / avg)
                 if weight - BIAS >= 0:
-                    self.plot.fig.add_trace(go.Scatter(x=[self.plot.klines[i][0]], y=[(float(self.plot.klines[i][2])) + avg * 2], mode='markers',
+                    self.fig.add_trace(go.Scatter(x=[self.data[i][0]], y=[(float(self.data[i][2])) + avg * 2], mode='markers',
                                              name='markers',
                                              marker=go.Marker(size=10, symbol='triangle-down', color='#ff85fa'),
                                              row=self.row, col=self.col))
-                    print(i, self.plot.klines[i][0], weight)
+                    print(i, self.data[i][0], weight)
             i += 1

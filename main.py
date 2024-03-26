@@ -2,7 +2,7 @@ from Plot import Plot
 
 
 if __name__ == "__main__":
-    plot_btc = Plot("BTCUSDT", "KLINE_INTERVAL_15MINUTE", 100)
+    plot_btc = Plot("BTCUSDT", "KLINE_INTERVAL_1HOUR", 200)
     plot_btc.create_base_plot()
     plot_btc.init_ind()
     plot_btc.init_figures()
@@ -19,6 +19,6 @@ if __name__ == "__main__":
     #dv_plot_dtc.create_signal()
     plot_btc.init_diver()
     plot_btc.diver.create_pivot()
-    #plot_btc.diver.find_diver_lower(50)
-    #plot_btc.diver.find_diver_upper(50)
+    plot_btc.diver.find_diver_lower(150)
+    plot_btc.diver.find_diver_upper(150)
     plot_btc.start_plot()

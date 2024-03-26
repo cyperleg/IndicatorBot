@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import plotly.subplots
 from CandlestickPattern import CandlestickPattern
 from Figures import Figures
 from Indicators import Indicators
@@ -19,28 +20,29 @@ class Plot:
         self.interval = interval
         self.klines = Plot.client.get_historical_klines(name, eval("Plot.client."+interval), limit=limit)
         self.convert_klines()
-        self.data = []
-        self.fig = []
-        self.pat = None
-        self.figures = None
-        self.ind = None
-        self.diver = None
+        self.data: pd.DataFrame = None
+        self.fig: plotly.subplots = None
+        self.pat: CandlestickPattern = None
+        self.figures: Figures = None
+        self.ind: Indicators = None
+        self.diver: Divergenses = None
 
     def init_pat(self):
-        self.pat = CandlestickPattern(self)
+        self.pat = CandlestickPattern(self.data, self.fig)
 
     def init_figures(self):
-        self.figures = Figures(self)
+        self.figures = Figures(self.data)
 
     def init_ind(self):
-        self.ind = Indicators(self)
+        self.ind = Indicators(self.data, self.fig)
 
     def init_diver(self):
-        self.diver = Divergenses(self)
+        self.diver = Divergenses(self.data, self.fig)
 
     def convert_klines(self):
         for i in range(len(self.klines)):
-            self.klines[i][0], self.klines[i][6]= datetime.fromtimestamp(self.klines[i][0]/1000), datetime.fromtimestamp(self.klines[i][6]/1000)
+            self.klines[i][0], self.klines[i][6] = datetime.fromtimestamp(self.klines[i][0]/1000),\
+                                                   datetime.fromtimestamp(self.klines[i][6]/1000)
             self.klines[i][1] = float(self.klines[i][1])
             self.klines[i][2] = float(self.klines[i][2])
             self.klines[i][3] = float(self.klines[i][3])
@@ -68,6 +70,7 @@ class Plot:
             title=self.name,
             xaxis_rangeslider_visible=False
         )
+
     def start_plot(self):
         if not isinstance(self.fig, list):
             self.fig.show()
